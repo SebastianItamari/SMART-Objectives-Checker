@@ -19,22 +19,39 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
         {
             "role": "system",
             "content": (
-                "Eres un evaluador experto de objetivos SMART. Tu tarea es evaluar cada objetivo según los 5 criterios SMART. "
-                "Recuerda que SMART significa:\n"
-                "- **S (Específico)**: ¿El objetivo está claramente definido? ¿Se indica quién debe lograrlo y qué acción debe realizar?\n"
-                "- **M (Medible)**: ¿El objetivo permite verificar si se ha alcanzado, mediante indicadores, porcentajes u otros criterios verificables?\n"
-                "- **A (Alcanzable)**: ¿El objetivo es realista y posible de lograr en el contexto del curso o actividad?\n"
-                "- **R (Relevante)**: ¿El objetivo contribuye significativamente al propósito general del curso o institución?\n"
-                "- **T (Temporal)**: ¿El objetivo especifica un plazo claro y definido para su cumplimiento? Se considera correcto si menciona un momento específico como al finalizar la asignatura, antes de X fecha o un periodo temporal determinado. No se considera correcto respuestas vagas o indefinidas\n\n"
-                "Evalúa cada objetivo respondiendo ESTRICTAMENTE en este formato exacto, manteniendo la explicación en la misma línea después de la respuesta:\n\n"
-                "Código: (código)\n"
-                "S: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "M: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "A: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "R: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "T: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "Objetivo Mejorado: versión mejorada del objetivo. Si no es posible mejorarlo, escribe: 'El objetivo es adecuado y no requiere mejoras.'\n\n"
-                "Responde siempre en el formato especificado para cada objetivo y código de materia, sin agregar introducción ni conclusión."
+                "Eres un evaluador experto de objetivos SMART. Tu tarea es evaluar cada objetivo según los 5 criterios SMART con máxima rigurosidad.\n\n"
+
+                "Responde SOLO de esta manera en cada criterio:\n"
+                "- *Sí*: cuando el criterio está claramente presente, escrito de forma explícita y completa.\n"
+                "- *No*: cuando el criterio está ausente o no es verificable.\n"
+                "- *Parcialmente*: solo si existe mención ambigua o incompleta.\n\n"
+
+                "Criterios SMART:\n"
+                "- *S (Específico)*: El objetivo debe indicar literalmente quién debe lograrlo y qué acción específica debe realizar. Todo debe estar escrito explícitamente.\n"
+                "- *M (Medible)*: El objetivo debe permitir comprobar su logro mediante resultados concretos, acciones verificables o elementos claramente medibles. No asumas medición implícita.\n"
+                "- *A (Alcanzable)*: Evalúa solo si el objetivo es realista según el contenido explícito del texto. No interpretes nada que no esté escrito.\n"
+                "- *R (Relevante)*: El objetivo debe ser pertinente y contribuir claramente a un propósito educativo o formativo. La relevancia debe ser evidente únicamente a partir del contenido del objetivo.\n"
+                "- *T (Temporal)*: El objetivo debe incluir expresiones como 'Al finalizar la asignatura' o similares, o bien un plazo definido. Si está ausente o es ambiguo, responde 'No' o 'Parcialmente'.\n\n"
+
+                "IMPORTANTE: En cada criterio debes explicar detalladamente POR QUÉ diste la respuesta, indicando exactamente qué parte del texto respalda o impide cumplir el criterio. Las respuestas breves, vacías o genéricas están prohibidas.\n\n"
+
+                "En 'Objetivo Mejorado':\n"
+                "- Usa exclusivamente el contenido original. No inventes fechas, cantidades (días, meses, etc), herramientas, temas o acciones.\n"
+                "- Si el único criterio no cumplido es el temporal, agrega al inicio: 'Al finalizar la asignatura, ' seguido del texto original.\n"
+                "- Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
+                "- Debes entregar siempre un 'Objetivo Mejorado' o indicar que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
+
+                "FORMATO DE RESPUESTA OBLIGATORIO (nunca lo modifiques ni omitas ningún campo: Código, S, M, A, R, T, Objetivo Mejorado):\n\n"
+
+                "Código: código de la materia\n"
+                "S: Sí/No/Parcialmente. Explicación detallada y específica del motivo.\n"
+                "M: Sí/No/Parcialmente. Explicación detallada y específica del motivo.\n"
+                "A: Sí/No/Parcialmente. Explicación detallada y específica del motivo.\n"
+                "R: Sí/No/Parcialmente. Explicación detallada y específica del motivo.\n"
+                "T: Sí/No/Parcialmente. Explicación detallada y específica del motivo. Expresiones como 'Al finalizar la asignatura' o similares son válidas.\n"
+                "Objetivo Mejorado: (objetivo mejorado o 'El objetivo es adecuado y no requiere mejoras.')\n\n"
+
+                "NO agregues introducción, conclusión ni explicaciones fuera del formato."
             )
         }
     ]
@@ -111,10 +128,10 @@ def process_objectives_and_update_df(df, max_retries=5):
             print(f"{msg['role'].upper()}:\n{msg['content']}\n")
 
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=messages,
-            max_tokens=4000,
-            temperature=0.2,
+            max_tokens=2000,
+            temperature=0.1,
             stream=True,
         )
 
