@@ -29,6 +29,10 @@ def create_icon_for_text(text: str) -> str:
         return f"{icon} {first_part_bold}<br>{rest}"
     else:
         return f"{icon} {first_part_bold}"
+    
+def replace_newlines_for_html(text: str) -> str:
+    # Replace \r\n and \n for <br>
+    return text.replace('\r\n', '<br>').replace('\n', '<br>')
 
 def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     # Define the HTML structure
@@ -36,6 +40,7 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     html_df = html_df.rename(columns={
         'Codigo Materia': 'Código',
         'Nombre Materia': 'Materia',
+        'Objetivo de la materia': 'Objetivo de la Materia',
         'S': 'S (Específico)',
         'M': 'M (Medible)',
         'A': 'A (Alcanzable)',
@@ -45,6 +50,9 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
 
     for col in ['S (Específico)', 'M (Medible)', 'A (Alcanzable)', 'R (Relevante)', 'T (Temporal)']:
         html_df[col] = html_df[col].apply(create_icon_for_text)
+    
+    html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(replace_newlines_for_html)
+    html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(replace_newlines_for_html)
 
     html_table = html_df.to_html(index=False, escape=False)
 
