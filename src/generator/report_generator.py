@@ -13,22 +13,22 @@ def make_dataframe(subject_data_path: str, objectives_dataframe: pd.DataFrame) -
     return merged_df
 
 def create_icon_for_text(text: str) -> str:
-    lines = text.split('\n')
-    first_line = lines[0].strip()
+    parts = text.split(' ')
+    first_part = parts[0].strip()
     icon = ""
-    if first_line == "Sí.":
+    if first_part == "Sí.":
         icon = "✅"
-    elif first_line == "Parcialmente.":
+    elif first_part == "Parcialmente.":
         icon = "⚠️"
-    elif first_line == "No.":
+    elif first_part == "No.":
         icon = "❌"
 
-    first_line_bold = f"<b>{first_line}</b>"
-    rest = "<br>".join([l for l in lines[1:]])
+    first_part_bold = f"<b>{first_part}</b>"
+    rest = " ".join([p for p in parts[1:]])
     if rest:
-        return f"{icon} {first_line_bold}<br>{rest}"
+        return f"{icon} {first_part_bold}<br>{rest}"
     else:
-        return f"{icon} {first_line_bold}"
+        return f"{icon} {first_part_bold}"
 
 def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     # Define the HTML structure
