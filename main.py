@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from src.generator.reportGenerator import make_dataframe, generate_html_report
+from generator.report_generator import make_dataframe, generate_html_report
 from dotenv import load_dotenv
 
 if __name__ == "__main__":
