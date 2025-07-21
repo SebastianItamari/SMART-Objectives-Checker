@@ -2,38 +2,38 @@ import pandas as pd
 from datetime import datetime
 import os
     
-def makeDataFrame(subjectDataPath: str, objectivesDataFrame: pd.DataFrame) -> pd.DataFrame:
-    subjectsDF = pd.read_csv(subjectDataPath)
-    objectivesDF = objectivesDataFrame
+def make_dataframe(subject_data_path: str, objectives_dataframe: pd.DataFrame) -> pd.DataFrame:
+    subjects_df = pd.read_csv(subject_data_path)
+    objectives_df = objectives_dataframe
 
     # Merge the two DataFrames
-    mergedDF = pd.merge(subjectsDF, objectivesDF, left_on='Codigo Materia', right_on='Codigo', how='inner')
-    mergedDF.drop(columns=['Codigo'], inplace=True)
+    merged_df = pd.merge(subjects_df, objectives_df, left_on='Codigo Materia', right_on='Codigo', how='inner')
+    merged_df.drop(columns=['Codigo'], inplace=True)
     
-    return mergedDF
+    return merged_df
 
-def createIconForText(text: str) -> str:
+def create_icon_for_text(text: str) -> str:
     lines = text.split('\n')
-    firstLine = lines[0].strip()
+    first_line = lines[0].strip()
     icon = ""
-    if firstLine == "Sí.":
+    if first_line == "Sí.":
         icon = "✅"
-    elif firstLine == "Parcialmente.":
+    elif first_line == "Parcialmente.":
         icon = "⚠️"
-    elif firstLine == "No.":
+    elif first_line == "No.":
         icon = "❌"
 
-    firstLineBold = f"<b>{firstLine}</b>"
+    first_line_bold = f"<b>{first_line}</b>"
     rest = "<br>".join([l for l in lines[1:]])
     if rest:
-        return f"{icon} {firstLineBold}<br>{rest}"
+        return f"{icon} {first_line_bold}<br>{rest}"
     else:
-        return f"{icon} {firstLineBold}"
+        return f"{icon} {first_line_bold}"
 
-def generateHTMLReport(evaluationDataFrame: pd.DataFrame) -> None:
+def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     # Define the HTML structure
-    htmlDF = evaluationDataFrame.copy()
-    htmlDF = htmlDF.rename(columns={
+    html_df = evaluation_dataframe.copy()
+    html_df = html_df.rename(columns={
         'Codigo Materia': 'Código',
         'Nombre Materia': 'Materia',
         'S': 'S (Específico)',
@@ -44,11 +44,11 @@ def generateHTMLReport(evaluationDataFrame: pd.DataFrame) -> None:
     })
 
     for col in ['S (Específico)', 'M (Medible)', 'A (Alcanzable)', 'R (Relevante)', 'T (Temporal)']:
-        htmlDF[col] = htmlDF[col].apply(createIconForText)
+        html_df[col] = html_df[col].apply(create_icon_for_text)
 
-    htmlTable = htmlDF.to_html(index=False, escape=False)
+    html_table = html_df.to_html(index=False, escape=False)
 
-    htmlContent = f"""
+    html_content = f"""
     <html>
     <head>
         <meta charset="UTF-8">
@@ -105,18 +105,18 @@ def generateHTMLReport(evaluationDataFrame: pd.DataFrame) -> None:
     <body>
         <h1>Reporte de Evaluación SMART - UPB</h1>
         <div class="table-container">
-            {htmlTable}
+            {html_table}
         </div>
     </body>
     </html>
     """
 
     # Create the HTML file
-    date = datetime.now().strftime("%Y-%m-%d")
-    fileName = f"Report_{date}.html"
-    reportsDir = os.path.join(os.path.dirname(__file__), '..', '..', 'reports')
-    os.makedirs(reportsDir, exist_ok=True)
-    filePath = os.path.join(reportsDir, fileName)
-    with open(filePath, "w", encoding="utf-8") as f:
-        f.write(htmlContent)
-    print(f"Generated report: {fileName}")
+    date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f"Report_{date}.html"
+    reports_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'reports')
+    os.makedirs(reports_dir, exist_ok=True)
+    file_path = os.path.join(reports_dir, file_name)
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print(f"Generated report: {file_name}")

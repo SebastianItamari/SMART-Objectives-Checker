@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from src.generator.reportGenerator import makeDataFrame, generateHTMLReport
+from src.generator.reportGenerator import make_dataframe, generate_html_report
 from dotenv import load_dotenv
 
 if __name__ == "__main__":
@@ -15,10 +15,10 @@ if __name__ == "__main__":
         "Objetivo Mejorado": ["Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas."]
     }
 
-    objectivesDF = pd.DataFrame(data)
+    objectives_df = pd.DataFrame(data)
 
     # Example usage
     load_dotenv()
     SUBJECTS_DATA_PATH = os.getenv("SUBJECTS_DATA_PATH")
-    evaluationDF = makeDataFrame(SUBJECTS_DATA_PATH, objectivesDF)
-    generateHTMLReport(evaluationDF)
+    evaluation_df = make_dataframe(SUBJECTS_DATA_PATH, objectives_df)
+    generate_html_report(evaluation_df)
