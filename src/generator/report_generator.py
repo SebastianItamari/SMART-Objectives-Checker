@@ -27,7 +27,6 @@ def replace_newlines_for_html(text: str) -> str:
 def append_ia_warning(text: str) -> str:
     return f"{text}<br><span style='color:red;'>Favor de verificar la validez. Sugerencia generada por IA.</span>"
 
-
 def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     # Define the HTML structure
     html_df = evaluation_dataframe.copy()
