@@ -1,24 +1,38 @@
-import pandas as pd
 import os
-from src.generator.report_generator import make_dataframe, generate_html_report
 from dotenv import load_dotenv
+import pandas as pd
+import webbrowser
+
+from src.data.preprocessor import load_and_preprocess
+from src.model.prompt_engine_hf import process_objectives_and_update_df
+from src.generator.report_generator import generate_html_report
 
 if __name__ == "__main__":
-    # Mock data
-    data = {
-        "Codigo": ["CIEHT06", "PSOHT04", "ECO0505", "BIO1001", "ECO0605"],
-        "S": ["Sí.\nEl objetivo es bastante claro en cuanto a lo que se quiere lograr: una comprensión técnica del impacto ambiental en obras civiles, junto con la aplicación de normativa y estrategias de mitigación.", "Sí.\nEl objetivo es bastante claro en cuanto a lo que se quiere lograr: una comprensión técnica del impacto ambiental en obras civiles, junto con la aplicación de normativa y estrategias de mitigación.", "Sí.\nEl objetivo es bastante claro en cuanto a lo que se quiere lograr: una comprensión técnica del impacto ambiental en obras civiles, junto con la aplicación de normativa y estrategias de mitigación.", "Sí.\nEl objetivo es bastante claro en cuanto a lo que se quiere lograr: una comprensión técnica del impacto ambiental en obras civiles, junto con la aplicación de normativa y estrategias de mitigación.","Sí.\nEl objetivo es bastante claro en cuanto a lo que se quiere lograr: una comprensión técnica del impacto ambiental en obras civiles, junto con la aplicación de normativa y estrategias de mitigación."],
-        "M": ["Parcialmente.\nNo establece indicadores de logro o evidencias claras de que se ha alcanzado la comprensión o la actitud crítica y responsable. Sería ideal especificar cómo se medirá: por ejemplo, mediante estudios de caso, evaluaciones prácticas o informes técnicos.", "Parcialmente.\nNo establece indicadores de logro o evidencias claras de que se ha alcanzado la comprensión o la actitud crítica y responsable. Sería ideal especificar cómo se medirá: por ejemplo, mediante estudios de caso, evaluaciones prácticas o informes técnicos.", "Parcialmente.\nNo establece indicadores de logro o evidencias claras de que se ha alcanzado la comprensión o la actitud crítica y responsable. Sería ideal especificar cómo se medirá: por ejemplo, mediante estudios de caso, evaluaciones prácticas o informes técnicos.","Parcialmente.\nNo establece indicadores de logro o evidencias claras de que se ha alcanzado la comprensión o la actitud crítica y responsable. Sería ideal especificar cómo se medirá: por ejemplo, mediante estudios de caso, evaluaciones prácticas o informes técnicos.","Parcialmente.\nNo establece indicadores de logro o evidencias claras de que se ha alcanzado la comprensión o la actitud crítica y responsable. Sería ideal especificar cómo se medirá: por ejemplo, mediante estudios de caso, evaluaciones prácticas o informes técnicos."],
-        "A": ["Sí.\nParece realista para el contexto de una asignatura universitaria, siempre que se brinden los contenidos y herramientas adecuadas.", "Sí.\nParece realista para el contexto de una asignatura universitaria, siempre que se brinden los contenidos y herramientas adecuadas.", "Sí.\nParece realista para el contexto de una asignatura universitaria, siempre que se brinden los contenidos y herramientas adecuadas.", "Sí.\nParece realista para el contexto de una asignatura universitaria, siempre que se brinden los contenidos y herramientas adecuadas.","Sí.\nParece realista para el contexto de una asignatura universitaria, siempre que se brinden los contenidos y herramientas adecuadas."],
-        "R": ["Sí.\nEs muy pertinente para estudiantes de ingeniería civil u otras disciplinas afines, en especial por la importancia actual del desarrollo sostenible y la normativa ambiental.", "Sí.\nEs muy pertinente para estudiantes de ingeniería civil u otras disciplinas afines, en especial por la importancia actual del desarrollo sostenible y la normativa ambiental.", "Sí.\nEs muy pertinente para estudiantes de ingeniería civil u otras disciplinas afines, en especial por la importancia actual del desarrollo sostenible y la normativa ambiental.", "Sí.\nEs muy pertinente para estudiantes de ingeniería civil u otras disciplinas afines, en especial por la importancia actual del desarrollo sostenible y la normativa ambiental.", "Sí.\nEs muy pertinente para estudiantes de ingeniería civil u otras disciplinas afines, en especial por la importancia actual del desarrollo sostenible y la normativa ambiental."],
-        "T": ["No.\nEl objetivo no menciona un plazo, como por ejemplo: 'al finalizar la asignatura' o 'durante el semestre'. Esto es importante para acotar el logro en el tiempo.", "No.\nEl objetivo no menciona un plazo, como por ejemplo: 'al finalizar la asignatura' o 'durante el semestre'. Esto es importante para acotar el logro en el tiempo.", "No.\nEl objetivo no menciona un plazo, como por ejemplo: 'al finalizar la asignatura' o 'durante el semestre'. Esto es importante para acotar el logro en el tiempo.", "No.\nEl objetivo no menciona un plazo, como por ejemplo: 'al finalizar la asignatura' o 'durante el semestre'. Esto es importante para acotar el logro en el tiempo.", "No.\nEl objetivo no menciona un plazo, como por ejemplo: 'al finalizar la asignatura' o 'durante el semestre'. Esto es importante para acotar el logro en el tiempo."],
-        "Objetivo Mejorado": ["Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas.", "Al finalizar la asignatura, el estudiante desarrollará una comprensión técnica del impacto ambiental en proyectos de infraestructura civil, aplicará la normativa vigente y estrategias de prevención y mitigación para evaluar y gestionar sus efectos durante la ejecución y mantenimiento de obras, demostrando una actitud profesional crítica y responsable frente al entorno natural mediante el análisis de casos prácticos y evaluaciones técnicas."]
-    }
-
-    objectives_df = pd.DataFrame(data)
-
-    # Example usage
     load_dotenv()
-    SUBJECTS_DATA_PATH = os.getenv("SUBJECTS_DATA_PATH")
-    evaluation_df = make_dataframe(SUBJECTS_DATA_PATH, objectives_df)
-    generate_html_report(evaluation_df)
+
+    RAW_CSV = os.getenv("RAW_CSV_PATH", "./data/datos_materias.csv")
+    PROCESSED_CSV = os.getenv("PROCESSED_CSV_PATH", "./data/processed.csv")
+    FINAL_RESULTS_CSV = os.getenv("FINAL_RESULTS_CSV_PATH", "./data/final_results.csv")
+    SUBJECTS_DATA_PATH = os.getenv("SUBJECTS_DATA_PATH", "./data/datos_materias.csv")
+
+    # 1. Preprocess
+    print("Preprocessing raw data...")
+    processed_data = load_and_preprocess(RAW_CSV)
+    pd.DataFrame(processed_data).to_csv(PROCESSED_CSV, index=False)
+
+    # 2. Evaluate with prompt engine
+    print("Evaluating objectives with model...")
+    df = pd.read_csv(PROCESSED_CSV)
+    df = df.head(5)  # Limit to first 15 rows for testing
+    df = process_objectives_and_update_df(df)
+    df.to_csv(FINAL_RESULTS_CSV, index=False)
+
+    # 3. Generate report
+    print("Generating HTML report...")
+    objectives_df = pd.read_csv(FINAL_RESULTS_CSV)
+    report_path = generate_html_report(objectives_df)
+
+    # 4. Open report in browser
+    abs_report_path = os.path.abspath(report_path)
+    webbrowser.open(f"file://{abs_report_path}")
+    

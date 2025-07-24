@@ -2,16 +2,6 @@ import pandas as pd
 from datetime import datetime
 import os
     
-def make_dataframe(subject_data_path: str, objectives_dataframe: pd.DataFrame) -> pd.DataFrame:
-    subjects_df = pd.read_csv(subject_data_path)
-    objectives_df = objectives_dataframe
-
-    # Merge the two DataFrames
-    merged_df = pd.merge(subjects_df, objectives_df, left_on='Codigo Materia', right_on='Codigo', how='inner')
-    merged_df.drop(columns=['Codigo'], inplace=True)
-    
-    return merged_df
-
 def create_icon_for_text(text: str) -> str:
     parts = text.split(' ')
     first_part = parts[0].strip()
@@ -128,3 +118,4 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(html_content)
     print(f"Generated report: {file_name}")
+    return file_path

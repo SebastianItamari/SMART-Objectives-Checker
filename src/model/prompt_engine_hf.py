@@ -19,22 +19,35 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
         {
             "role": "system",
             "content": (
-                "Eres un evaluador experto de objetivos SMART. Tu tarea es evaluar cada objetivo según los 5 criterios SMART. "
-                "Recuerda que SMART significa:\n"
-                "- **S (Específico)**: ¿El objetivo está claramente definido? ¿Se indica quién debe lograrlo y qué acción debe realizar?\n"
-                "- **M (Medible)**: ¿El objetivo permite verificar si se ha alcanzado, mediante indicadores, porcentajes u otros criterios verificables?\n"
-                "- **A (Alcanzable)**: ¿El objetivo es realista y posible de lograr en el contexto del curso o actividad?\n"
-                "- **R (Relevante)**: ¿El objetivo contribuye significativamente al propósito general del curso o institución?\n"
-                "- **T (Temporal)**: ¿El objetivo establece un plazo concreto para su cumplimiento? Si se indica al finalizar la asignatura o algo similar se considera correcto\n\n"
-                "Evalúa cada objetivo respondiendo ESTRICTAMENTE en este formato exacto, manteniendo la explicación en la misma línea después de la respuesta:\n\n"
-                "Código: (código)\n"
-                "S: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "M: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "A: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "R: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "T: Sí/No/Parcialmente. explicación clara del motivo.\n"
-                "Objetivo Mejorado: versión mejorada del objetivo. Si no es posible mejorarlo, escribe: 'El objetivo es adecuado y no requiere mejoras.'\n\n"
-                "Responde siempre en el formato especificado para cada objetivo y código de materia, sin agregar introducción ni conclusión."
+                "Eres un evaluador experto de objetivos SMART. Tu tarea es evaluar con máxima rigurosidad cada objetivo según los cinco criterios SMART: Específico, Medible, Alcanzable, Relevante y Temporal.\n\n"
+
+                "INSTRUCCIONES GENERALES:\n"
+                "- Responde SIEMPRE usando el FORMATO DE RESPUESTA al final de este mensaje. No agregues introducciones, conclusiones ni comentarios fuera de ese formato.\n"
+                "- Evalúa EXCLUSIVAMENTE lo que esté explícito en el texto del objetivo. No interpretes, completes ni adivines intenciones.\n"
+                "- Sé detallado: cada explicación debe citar o parafrasear partes del objetivo para justificar claramente la evaluación de cada criterio.\n\n"
+
+                "CRITERIOS SMART:\n"
+                "- *S (Específico)*: El objetivo debe indicar claramente quién realiza la acción (por ejemplo, 'el estudiante') y qué acción específica debe realizar.\n"
+                "- *M (Medible)*: El objetivo debe incluir un resultado observable o criterio verificable. Por ejemplo: describir, resolver, identificar, crear.\n"
+                "- *A (Alcanzable)*: Evalúa si el objetivo es realista según la información contenida en el texto. No hagas suposiciones externas.\n"
+                "- *R (Relevante)*: El objetivo debe tener una conexión clara con propósitos educativos o formativos. Debe contribuir al aprendizaje, desarrollo de habilidades o competencias.\n"
+                "- *T (Temporal)*: Debe incluir un marco temporal claro como 'Al finalizar la asignatura' o una fecha/plazo específico. Si no hay referencia temporal explícita, responde no es válido.\n\n"
+
+                "En 'Objetivo Mejorado':\n"
+                "- Basate exclusivamente en el contenido del objetivo original. No inventes fechas, cantidades (días, meses, etc), herramientas, temas o acciones.\n"
+                "- Si el criterio no cumplido es el temporal, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
+                "- Si el objetivo no especifica quién realiza la acción (No Específico), debe agregarse explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
+                "- Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
+                "- Debes entregar siempre un 'Objetivo Mejorado' o indicar que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
+
+                "FORMATO DE RESPUESTA (NO MODIFIQUES ESTO):\n\n"
+                "Código: [código de la materia]\n"
+                "S: [Sí / No / Parcialmente]. Explicación detallada con referencias textuales.\n"
+                "M: [Sí / No / Parcialmente]. Explicación detallada con referencias textuales.\n"
+                "A: [Sí / No / Parcialmente]. Explicación detallada con referencias textuales.\n"
+                "R: [Sí / No / Parcialmente]. Explicación detallada con referencias textuales.\n"
+                "T: [Sí / No / Parcialmente]. Explicación detallada con referencias textuales.\n"
+                "Objetivo Mejorado: [texto mejorado o 'El objetivo es adecuado y no requiere mejoras.']"
             )
         }
     ]
@@ -62,7 +75,6 @@ def parse_response(text: str) -> Dict[str, str]:
     else:
         result["Código"] = "ERROR"
 
-    # Patrones robustos
     patterns = {
         "S": r"S:\s*(Sí|No|Parcialmente)[.,]?\s*(.*)",
         "M": r"M:\s*(Sí|No|Parcialmente)[.,]?\s*(.*)",
@@ -94,16 +106,15 @@ def parse_response(text: str) -> Dict[str, str]:
 def process_objectives_and_update_df(df, max_retries=5):
     data = df.to_dict(orient='records')
     total_records = len(data)
-    results = [None] * total_records  # Pre-allocate results list
+    results = [None] * total_records
 
     print(f"Total objectives to process: {total_records}")
     print(f"Batch size: {BATCH_SIZE}")
 
-    pending_indices = list(range(total_records))  # Indices still needing processing
-    retry_tracker = {idx: 0 for idx in pending_indices}  # Retry count per index
+    pending_indices = list(range(total_records))
+    retry_tracker = {idx: 0 for idx in pending_indices}
 
     while pending_indices:
-        # Build current batch using available pending indices (up to batch size)
         current_batch_indices = pending_indices[:BATCH_SIZE]
         batch = [data[idx] for idx in current_batch_indices]
         messages = build_messages(batch)
@@ -121,11 +132,10 @@ def process_objectives_and_update_df(df, max_retries=5):
             stream=True,
         )
 
-        # Accumulate streamed chunks into final text
         response_parts = []
         for chunk in stream:
-            if chunk.choices and chunk.choices[0].delta:
-                content = chunk.choices[0].delta.get("content")
+            if chunk.choices and chunk.choices[0].delta and hasattr(chunk.choices[0].delta, "content"):
+                content = chunk.choices[0].delta.content
                 if content:
                     response_parts.append(content)
 
@@ -135,13 +145,11 @@ def process_objectives_and_update_df(df, max_retries=5):
         print(full_response)
         print("\n--- End of raw response ---\n")
 
-        # Handle empty or invalid response
         if full_response == "" or "Código:" not in full_response:
             for idx in current_batch_indices:
                 retry_tracker[idx] += 1
             print(f"Batch failed (empty or invalid response). Retrying individual items in next round...\n")
         else:
-            # Parse response by splitting into result blocks
             splitted_responses = full_response.split("Código:")
             print(f"Total response blocks found: {len(splitted_responses) - 1}")
 
@@ -151,11 +159,9 @@ def process_objectives_and_update_df(df, max_retries=5):
                 parsed = parse_response(response_text)
                 parsed_batch_results.append(parsed)
 
-            # Assign parsed results to the right indices
             for batch_idx, parsed_result in zip(current_batch_indices, parsed_batch_results):
                 results[batch_idx] = parsed_result
 
-        # Recalculate which items still need processing
         pending_indices = [
             idx for idx in range(total_records)
             if results[idx] is None or any(
@@ -164,7 +170,6 @@ def process_objectives_and_update_df(df, max_retries=5):
             )
         ]
 
-        # Remove items that exceeded max retries
         pending_indices = [
             idx for idx in pending_indices
             if retry_tracker[idx] < max_retries
@@ -172,24 +177,9 @@ def process_objectives_and_update_df(df, max_retries=5):
 
         print(f"\nRemaining objectives to reprocess: {len(pending_indices)}")
 
-    # Populate the final DataFrame with parsed results
     for idx, parsed_result in enumerate(results):
         for key in ["S", "M", "A", "R", "T", "Objetivo Mejorado"]:
             df.at[idx, key] = parsed_result.get(key, "ERROR")
 
     print("\nModel processing complete.\n")
     return df
-
-# Script entry point
-if __name__ == "__main__":
-    csv_path = '../../data/processed.csv'
-    output_path = '../../data/final_results.csv'
-
-    print("Loading processed CSV...\n")
-    df = pd.read_csv(csv_path).head(20)
-
-    print("Sending objectives to model...\n")
-    df = process_objectives_and_update_df(df)
-
-    df.to_csv(output_path, index=False)
-    print(f"\nFinal results saved at: {output_path}")

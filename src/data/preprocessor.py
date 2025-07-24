@@ -45,16 +45,3 @@ def preprocess_dataframe(df: pd.DataFrame) -> List[Dict]:
 def load_and_preprocess(filepath: str) -> List[Dict]:
     df = read_csv(filepath)
     return preprocess_dataframe(df)
-
-if __name__ == "__main__":
-    csv_path = '../../data/datos_materias.csv'
-    output_path = '../../data/processed.csv'
-
-    print("Starting preprocessing test...\n")
-    data = load_and_preprocess(csv_path)
-
-    # Save processed data
-    import pandas as pd
-    pd.DataFrame(data).to_csv(output_path, index=False)
-    print(f"\nProcessed CSV saved at: {output_path}")
-
