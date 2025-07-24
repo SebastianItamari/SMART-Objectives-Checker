@@ -82,6 +82,7 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
                 padding: 12px;
                 text-align: left;
                 vertical-align: top;
+                font-size: 14px;
             }}
             th {{
                 background-color: #413d83 !important;

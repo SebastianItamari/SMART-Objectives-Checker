@@ -27,18 +27,18 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
                 "- *Parcialmente*: solo si existe mención ambigua o incompleta.\n\n"
 
                 "Criterios SMART:\n"
-                "- *S (Específico)*: El objetivo debe indicar quién debe lograrlo y qué acción específica debe realizar. Todo debe estar escrito explícitamente.\n"
-                "- *M (Medible)*: El objetivo debe permitir comprobar si se ha alcanzado o no. Esto implica establecer un indicador o resultado observable explícitamente.\n"
-                "- *A (Alcanzable)*: Evalúa solo si el objetivo es realista según el contenido explícito del texto. No interpretes nada que no esté escrito.\n"
+                "- *S (Específico)*: El objetivo debe indicar quién debe lograrlo o mediante construcciones claras como “Desarrollar en el estudiante...” y qué acción específica debe realizar.\n"
+                "- *M (Medible)*: El objetivo debe permitir comprobar si se ha alcanzado o no. Esto implica establecer un indicador o resultado observable.\n"
+                "- *A (Alcanzable)*: Evalúa solo si el objetivo es realista según el contenido explícito del texto.\n"
                 "- *R (Relevante)*: El objetivo debe ser pertinente y contribuir claramente a un propósito educativo o formativo. La relevancia debe ser evidente únicamente a partir del contenido del objetivo.\n"
-                "- *T (Temporal)*: El objetivo debe incluir expresiones como 'Al finalizar la asignatura' o similares, o bien un plazo definido. Si está ausente o es ambiguo, responde 'No' o 'Parcialmente'.\n\n"
+                "- *T (Temporal)*: El objetivo debe incluir expresiones como 'Al finalizar la asignatura' o similares, o bien un plazo definido.\n\n"
 
                 "IMPORTANTE: En cada criterio debes explicar detalladamente POR QUÉ diste la respuesta, indicando exactamente qué parte del texto respalda o impide cumplir el criterio. Las respuestas breves, vacías o genéricas están prohibidas.\n\n"
 
                 "En 'Objetivo Mejorado':\n"
                 "- Usa exclusivamente el contenido original. No inventes fechas, cantidades (días, meses, etc), herramientas, temas o acciones.\n"
                 "- Si el criterio no cumplido es el temporal, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
-                "- Si el objetivo no especifica quién realiza la acción (No Medible), debe agregarse explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
+                "- Si el objetivo no especifica quién realiza la acción, debe agregarse explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
                 "- Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
                 "- Debes entregar siempre un 'Objetivo Mejorado' o indicar que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
 
@@ -132,7 +132,7 @@ def process_objectives_and_update_df(df, max_retries=5):
             model="gpt-4o",
             messages=messages,
             max_tokens=2000,
-            temperature=0.1,
+            temperature=0.2,
             stream=True,
         )
 
