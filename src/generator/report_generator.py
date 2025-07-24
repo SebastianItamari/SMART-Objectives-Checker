@@ -24,6 +24,10 @@ def replace_newlines_for_html(text: str) -> str:
     # Replace \r\n and \n for <br>
     return text.replace('\r\n', '<br>').replace('\n', '<br>')
 
+def append_ia_warning(text: str) -> str:
+    return f"{text}<br><span style='color:red;'>Favor de verificar la validez. Sugerencia generada por IA.</span>"
+
+
 def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     # Define the HTML structure
     html_df = evaluation_dataframe.copy()
@@ -42,7 +46,7 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
         html_df[col] = html_df[col].apply(create_icon_for_text)
     
     html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(replace_newlines_for_html)
-    html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(replace_newlines_for_html)
+    html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(replace_newlines_for_html).apply(append_ia_warning)
 
     html_table = html_df.to_html(index=False, escape=False)
 
