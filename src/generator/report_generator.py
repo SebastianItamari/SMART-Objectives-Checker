@@ -44,8 +44,8 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     for col in ['S (Específico)', 'M (Medible)', 'A (Alcanzable)', 'R (Relevante)', 'T (Temporal)']:
         html_df[col] = html_df[col].apply(create_icon_for_text)
     
-    html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(replace_newlines_for_html)
-    html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(replace_newlines_for_html).apply(append_ia_warning)
+    html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(replace_newlines_for_html).apply(append_ia_warning)
+    html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(replace_newlines_for_html)
 
     html_table = html_df.to_html(index=False, escape=False)
 
