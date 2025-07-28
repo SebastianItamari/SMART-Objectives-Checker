@@ -87,7 +87,7 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
                 width: 100%;
                 border: 1px solid #ddd;
                 border-radius: 10px;
-                min-width: 2200px;
+                min-width: 2400px;
             }}
             th, td {{
                 border: 1px solid #ddd;
