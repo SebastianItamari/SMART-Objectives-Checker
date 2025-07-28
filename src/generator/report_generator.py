@@ -24,8 +24,15 @@ def replace_newlines_for_html(text: str) -> str:
     # Replace \r\n and \n for <br>
     return text.replace('\r\n', '<br>').replace('\n', '<br>')
 
-def append_ia_warning(text: str) -> str:
-    return f"{text}<br><span style='color:red;'>Favor de verificar la validez. Sugerencia generada por IA.</span>"
+def format_output(text: str) -> str:
+    lines = text.splitlines()
+    
+    if lines and lines[0].strip() != "El objetivo es adecuado y no requiere mejoras.":
+        text = f"<b>Objetivo Mejorado:</b><br>{text}"
+        text = text.replace('*Sugerencias:*', '<br><b>Sugerencias Adicionales:</b>')
+        text = f"{text}<br><span style='color:red;'>Favor de verificar la validez. Sugerencia generada por IA.</span>"
+
+    return text
 
 def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     # Define the HTML structure
@@ -44,7 +51,7 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     for col in ['S (Específico)', 'M (Medible)', 'A (Alcanzable)', 'R (Relevante)', 'T (Temporal)']:
         html_df[col] = html_df[col].apply(create_icon_for_text)
     
-    html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(replace_newlines_for_html).apply(append_ia_warning)
+    html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(replace_newlines_for_html).apply(format_output)
     html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(replace_newlines_for_html)
 
     html_table = html_df.to_html(index=False, escape=False)

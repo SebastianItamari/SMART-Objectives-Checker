@@ -36,11 +36,12 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
                 "IMPORTANTE: En cada criterio debes explicar detalladamente POR QUÉ diste la respuesta, indicando exactamente qué parte del texto respalda o impide cumplir el criterio. Las respuestas breves, vacías o genéricas están prohibidas.\n\n"
 
                 "En 'Objetivo Mejorado':\n"
-                "- Usa exclusivamente el contenido original. No inventes fechas, cantidades (días, meses, etc), herramientas, temas o acciones.\n"
-                "- Si el criterio no cumplido es el temporal, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
-                "- Si el objetivo no especifica quién realiza la acción, debe agregarse explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
-                "- Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
-                "- Debes entregar siempre un 'Objetivo Mejorado' o indicar que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
+                "1. Usa exclusivamente el contenido original. No inventes fechas, cantidades (días, meses, etc), herramientas, temas o acciones.\n"
+                "2. Si el criterio no cumplido es el temporal, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
+                "3. Si el objetivo no especifica quién realiza la acción, debe agregarse explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
+                "4. En una nueva línea, agrega un listado breve y conciso de sugerencias solo para mejorar el *objetivo mejorado* (es decir, una vez que ya se aplicaron correctamente los puntos 2 y 3), no el original. Las sugerencias deben estar *acompañadas de ejemplos específicos* que ayuden a que el objetivo mejorado cumpla plenamente los criterios SMART, incluyendo ejemplos de métricas o acciones observables si fuera necesario. El formato debe ser exactamente este, en nueva línea y con viñetas:\n*Sugerencias:*\n- Sugerencia 1\n- Sugerencia 2\n...\nSi el objetivo ya es totalmente adecuado, omite este paso.\n"
+                "5. Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
+                "6. Debes entregar siempre un 'Objetivo Mejorado' o indicar que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
 
                 "FORMATO DE RESPUESTA OBLIGATORIO (nunca lo modifiques ni omitas ningún campo: Código, S, M, A, R, T, Objetivo Mejorado):\n\n"
 
@@ -132,7 +133,7 @@ def process_objectives_and_update_df(df, max_retries=5):
             model="gpt-4o",
             messages=messages,
             max_tokens=2000,
-            temperature=0.2,
+            temperature=0.3,
             stream=True,
         )
 
