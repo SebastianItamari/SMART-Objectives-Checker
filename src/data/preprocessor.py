@@ -7,7 +7,8 @@ def read_csv(filepath: str) -> pd.DataFrame:
 
 def preprocess_dataframe(df: pd.DataFrame) -> List[Dict]:
     required_columns = [
-        'Carrera',
+        'Carrera Padre',
+        'Carreras Hijos',
         'Codigo Materia',
         'Nombre Materia',
         'Electiva',
@@ -17,29 +18,13 @@ def preprocess_dataframe(df: pd.DataFrame) -> List[Dict]:
         if col not in df.columns:
             raise ValueError(f"Missing required column: {col}")
 
-    df['Carrera'] = df['Carrera'].str.strip()
-    df['Codigo Materia'] = df['Codigo Materia'].str.strip()
-    df['Nombre Materia'] = df['Nombre Materia'].str.strip()
-    df['Electiva'] = df['Electiva'].str.strip()
-    df['Objetivo de la materia'] = df['Objetivo de la materia'].str.strip()
+    for col in required_columns:
+        df[col] = df[col].astype(str).str.strip()
 
-    result_rows = []
+    df['Carreras Hijos'] = df['Carreras Hijos'].replace(['\\N', r'\N'], 'Ninguna')
 
-    grouped = df.groupby('Codigo Materia')
-
-    for _, group in grouped:
-        carreras = set(group['Carrera'].str.strip())
-
-        if 'TODAS LAS CARRERAS' in carreras:
-            row = group[group['Carrera'].str.strip() == 'TODAS LAS CARRERAS'].iloc[0]
-            result_rows.append(row)
-        else:
-            carreras_combined = ', '.join(sorted(carreras))
-            row = group.iloc[0].copy()
-            row['Carrera'] = carreras_combined
-            result_rows.append(row)
-
-    cleaned_df = pd.DataFrame(result_rows)
+    cleaned_df = df[required_columns].copy()
+    print(cleaned_df)
     return cleaned_df.to_dict(orient='records')
 
 def load_and_preprocess(filepath: str) -> List[Dict]:
