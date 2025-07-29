@@ -38,8 +38,8 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     # Define the HTML structure
     html_df = evaluation_dataframe.copy()
     html_df = html_df.rename(columns={
-        'Carrera Padre': 'Jefatura Encargada',
-        'Carreras Hijos': 'Jefaturas Asociadas',
+        'Carrera Padre': 'Carrera Responsable',
+        'Carreras Hijos': 'Da servicio a:',
         'Codigo Materia': 'Código',
         'Nombre Materia': 'Materia',
         'Objetivo de la materia': 'Objetivo de la Materia',
@@ -62,6 +62,7 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Reporte SMART</title>
         <style>
             body {{
