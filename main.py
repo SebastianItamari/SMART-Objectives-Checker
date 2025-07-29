@@ -4,7 +4,7 @@ import pandas as pd
 import webbrowser
 
 from src.data.preprocessor import load_and_preprocess
-from src.model.prompt_engine_hf import process_objectives_and_update_df
+from src.model.prompt_engine_openai import process_objectives_and_update_df
 from src.generator.report_generator import generate_html_report
 
 if __name__ == "__main__":
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # 2. Evaluate with prompt engine
     print("Evaluating objectives with model...")
     df = pd.read_csv(PROCESSED_CSV)
-    df = df.head(5)  # Limit to first 15 rows for testing
+    df = df.head(10)  # Limit to first 15 rows for testing
     df = process_objectives_and_update_df(df)
     df.to_csv(FINAL_RESULTS_CSV, index=False)
 
