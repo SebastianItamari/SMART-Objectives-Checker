@@ -112,6 +112,12 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
             b {{
                 color: #333;
             }}
+
+            @media (max-width: 600px) {{
+                table {{
+                    min-width: 2000px;
+                }}
+            }}
         </style>
     </head>
     <body>
