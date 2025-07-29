@@ -19,40 +19,50 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
         {
             "role": "system",
             "content": (
-                "Eres un evaluador experto de objetivos SMART. Tu tarea es evaluar cada objetivo según los 5 criterios SMART con máxima rigurosidad.\n\n"
+                "ROL: Evaluador experto de objetivos SMART\n\n"
+                "Tu tarea es analizar cada objetivo según los 5 criterios SMART, con máxima rigurosidad y siguiendo las instrucciones detalladas.\n\n"
 
-                "Responde SOLO de esta manera en cada criterio:\n"
-                "- *Sí*: cuando el criterio está claramente presente, escrito de forma explícita y completa.\n"
-                "- *No*: cuando el criterio está ausente o no es verificable.\n"
-                "- *Parcialmente*: solo si existe mención ambigua o incompleta.\n\n"
+                "Responde SOLO de la siguiente manera para cada criterio:\n"
+                "- *Sí*: El criterio está claramente presente, escrito de forma explícita y completa.\n"
+                "- *No*: El criterio está ausente o no es verificable.\n"
+                "- *Parcialmente*: Hay mención ambigua o incompleta.\n\n"
 
-                "Criterios SMART:\n"
-                "- *S (Específico)*: El objetivo debe indicar quién debe lograrlo o mediante construcciones claras como “Desarrollar en el estudiante...” y qué acción específica debe realizar.\n"
-                "- *M (Medible)*: El objetivo debe permitir comprobar si se ha alcanzado o no. Esto implica establecer un indicador o resultado observable.\n"
-                "- *A (Alcanzable)*: Evalúa solo si el objetivo es realista según el contenido explícito del texto.\n"
-                "- *R (Relevante)*: El objetivo debe ser pertinente y contribuir claramente a un propósito educativo o formativo. La relevancia debe ser evidente únicamente a partir del contenido del objetivo.\n"
-                "- *T (Temporal)*: El objetivo debe incluir expresiones como 'Al finalizar la asignatura' o similares, o bien un plazo definido.\n\n"
+                "TUS CRITERIOS DE EVALUACIÓN:\n"
+                "- *S (Específico)*: El objetivo debe indicar quién debe lograrlo (por ejemplo, 'el estudiante') y qué acción específica debe realizar.\n"
+                "- *M (Medible)*: El objetivo debe permitir comprobar si se ha alcanzado, estableciendo indicadores o resultados observables.\n"
+                "- *A (Alcanzable)*: Evalúa RIGUROSAMENTE si el objetivo es realista según el contenido explícito del texto.\n"
+                "- *R (Relevante)*: Evalúa RIGUROSAMENTE, el objetivo debe ser pertinente y contribuir claramente a un propósito educativo o formativo, evidenciado en el texto.\n"
+                "- *T (Temporal)*: El objetivo debe incluir expresiones como 'Al finalizar la asignatura' o un plazo definido.\n\n"
 
-                "IMPORTANTE: En cada criterio debes explicar detalladamente POR QUÉ diste la respuesta, indicando exactamente qué parte del texto respalda o impide cumplir el criterio. Las respuestas breves, vacías o genéricas están prohibidas.\n\n"
+                "IMPORTANTE:\n"
+                "- En cada criterio, explica detalladamente POR QUÉ diste la respuesta, indicando exactamente qué parte del texto respalda o impide cumplir el criterio.\n"
+                "- Las respuestas breves, vacías o genéricas están prohibidas.\n\n"
 
-                "En 'Objetivo Mejorado':\n"
-                "1. Usa exclusivamente el contenido original. No inventes fechas, cantidades (días, meses, etc), herramientas, temas o acciones.\n"
-                "2. Si el criterio no cumplido es el temporal, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
-                "3. Si el objetivo *no especifica quién realiza la acción*, debe *agregarse explícitamente el actor 'el estudiante'* al objetivo mejorado.\n"
-                "4. En una nueva línea, agrega un listado breve y conciso de sugerencias solo para mejorar el *objetivo mejorado* (es decir, una vez que ya se aplicaron correctamente los puntos 2 y 3), no el original. Las sugerencias deben estar *acompañadas de ejemplos específicos* que ayuden a que el objetivo mejorado cumpla plenamente los criterios SMART, incluyendo ejemplos de métricas o acciones observables si fuera necesario. El formato debe ser exactamente este, en nueva línea y con viñetas:\n*Sugerencias:*\n- Sugerencia 1\n- Sugerencia 2\n- Sugerencia n\n...\nSi el objetivo ya es totalmente adecuado, omite este paso.\n"
-                "5. Las sugerencias, si es que aplica, ÚNICAMENTE a los criterios SMART definidos previamente que NO sean SÍ, EXCLUYENDO de la lista de sugerencias: \n - Criterio Temporal\n - Criterio Específico cuando la falla sea únicamente por ausencia del actor'\n"
-                "6. Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
-                "7. Debes entregar siempre un 'Objetivo Mejorado' o indicar que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
+                "OBJETIVO MEJORADO:\n"
+                "1. Usa exclusivamente el contenido original. NO inventes fechas, cantidades, herramientas, temas ni acciones.\n"
+                "2. Si el criterio temporal NO se cumple, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
+                "3. Si el objetivo NO especifica quién realiza la acción, agrega explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
+                "4. En una nueva línea, agrega un listado breve y conciso de sugerencias SOLO para mejorar el objetivo mejorado (no el original), siguiendo este formato:\n"
+                "   *Sugerencias para criterio [Criterio SMART]:*\n"
+                "   - Sugerencia 1\n"
+                "   - Sugerencia 2\n"
+                "   - ...\n"
+                "   Las sugerencias deben estar acompañadas de ejemplos específicos que ayuden a cumplir plenamente los criterios SMART, incluyendo métricas o acciones observables si es necesario.\n"
+                "   **NUNCA incluyas sugerencias para el criterio Temporal.**\n"
+                "   **NUNCA incluyas sugerencias para el criterio Específico si la única falla es la ausencia del actor.**\n"
+                "   Si el objetivo ya es totalmente adecuado, omite este paso.\n"
+                "5. Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
+                "6. Siempre entrega un 'Objetivo Mejorado' o indica que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
 
-                "FORMATO DE RESPUESTA OBLIGATORIO (nunca lo modifiques ni omitas ningún campo: Código, S, M, A, R, T, Objetivo Mejorado):\n\n"
+                "FORMATO DE RESPUESTA OBLIGATORIO (no modifiques ni omitas ningún campo):\n"
 
                 "Código: código de la materia\n"
-                "S: Sí/No/Parcialmente. Explicación detallada y específica del motivo. [Se debe indicar explícitamente al actor, por ejemplo 'el estudiante'.]\n"
+                "S: Sí/No/Parcialmente. Explicación detallada y específica del motivo. [Debe indicar explícitamente al actor, por ejemplo 'el estudiante'.]\n"
                 "M: Sí/No/Parcialmente. Explicación detallada y específica del motivo.\n"
                 "A: Sí/No/Parcialmente. Explicación detallada y específica del motivo.\n"
                 "R: Sí/No/Parcialmente. Explicación detallada y específica del motivo.\n"
                 "T: Sí/No/Parcialmente. Explicación detallada y específica del motivo. [Expresiones como 'Al finalizar la asignatura' o similares son válidas.]\n"
-                "Objetivo Mejorado: (objetivo mejorado o 'El objetivo es adecuado y no requiere mejoras.')\n\n"
+                "Objetivo Mejorado: (objetivo mejorado [Utilizar TODO el contenido del objetivo original, NO RESUMIR] o 'El objetivo es adecuado y no requiere mejoras.')\n"
 
                 "NO agregues introducción, conclusión ni explicaciones fuera del formato."
             )
@@ -133,8 +143,8 @@ def process_objectives_and_update_df(df, max_retries=5):
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
-            max_tokens=2000,
-            temperature=0.2,
+            max_tokens=4000,
+            temperature=0.3,
             stream=True,
         )
 
@@ -183,9 +193,14 @@ def process_objectives_and_update_df(df, max_retries=5):
 
         print(f"\nRemaining objectives to reprocess: {len(pending_indices)}")
 
-    for idx, parsed_result in enumerate(results):
-        for key in ["S", "M", "A", "R", "T", "Objetivo Mejorado"]:
-            df.at[idx, key] = parsed_result.get(key, "ERROR")
+    for idx, row in df.iterrows():
+        codigo = row["Codigo Materia"]
+        parsed_result = next(
+            (r for r in results if r and r.get("Código") == codigo), None
+        )
+        if parsed_result:
+            for key in ["S", "M", "A", "R", "T", "Objetivo Mejorado"]:
+                df.at[idx, key] = parsed_result.get(key, "ERROR")
 
     print("\nModel processing complete.\n")
     return df

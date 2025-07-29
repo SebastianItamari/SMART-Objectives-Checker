@@ -17,13 +17,13 @@ if __name__ == "__main__":
 
     # 1. Preprocess
     print("Preprocessing raw data...")
-    processed_data = load_and_preprocess(RAW_CSV)
+    processed_data = load_and_preprocess()
     pd.DataFrame(processed_data).to_csv(PROCESSED_CSV, index=False)
 
     # 2. Evaluate with prompt engine
     print("Evaluating objectives with model...")
     df = pd.read_csv(PROCESSED_CSV)
-    df = df.head(10)  # Limit to first 15 rows for testing
+    df = df.sample(10)
     df = process_objectives_and_update_df(df)
     df.to_csv(FINAL_RESULTS_CSV, index=False)
 
