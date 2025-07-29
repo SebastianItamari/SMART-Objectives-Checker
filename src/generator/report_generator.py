@@ -29,7 +29,7 @@ def format_output(text: str) -> str:
     
     if lines and lines[0].strip() != "El objetivo es adecuado y no requiere mejoras.":
         text = f"<b>Objetivo Mejorado:</b><br>{text}"
-        text = text.replace('*Sugerencias:*', '<br><b>Sugerencias Adicionales:</b>')
+        text = text.replace("*Sugerencias:*", "<br><b>Sugerencias para criterio 'Medible':</b>")
         text = f"{text}<br><br><span style='color:red;'>Favor de verificar la validez. Sugerencia generada por IA.</span>"
 
     return text
