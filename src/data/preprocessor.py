@@ -48,7 +48,7 @@ def json_to_df(data: List[Dict]) -> pd.DataFrame:
         first_row = course_rows.iloc[0]
         result_rows.append({
             'Carrera Padre': real_parent,
-            'Carreras Hijos': ', '.join(sorted(children_set)) if children_set else 'Ninguna',
+            'Carreras Hijos': '\n'.join(sorted(children_set)) if children_set else 'Ninguna',
             'Codigo Materia': code,
             'Nombre Materia': first_row['Nombre Materia'],
             'Electiva': first_row['Electiva'],
