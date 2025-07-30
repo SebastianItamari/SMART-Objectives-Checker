@@ -23,9 +23,8 @@ if __name__ == "__main__":
     # 2. Evaluate with prompt engine
     print("Evaluating objectives with model...")
     df = pd.read_csv(PROCESSED_CSV)
-    df = df.sample(10)
-    df = process_objectives_and_update_df(df)
-    df.to_csv(FINAL_RESULTS_CSV, index=False)
+    # Pass save_path so progress is saved after each batch
+    df = process_objectives_and_update_df(df, save_path=FINAL_RESULTS_CSV)
 
     # 3. Generate report
     print("Generating HTML report...")

@@ -27,12 +27,38 @@ def replace_newlines_for_html(text: str) -> str:
 
 def format_output(text: str) -> str:
     lines = text.splitlines()
-    text = re.sub(r'\*(.*?)\*', r'<br><b>\1</b>', text)
-    
+
+    text = re.sub(r'^\*$', '', text, flags=re.MULTILINE)
+    text = re.sub(r'\*', '', text)
+
+    # Find all matches for "Sugerencias para criterio ..."
+    matches = list(re.finditer(r'(Sugerencias para criterio [^\n<]+:)', text))
+    if matches:
+        # Add <br><br> before the first, bold all
+        first = matches[0]
+        start, end = first.span()
+        text = (
+            text[:start] +
+            "<br><br><b>" + first.group(1) + "</b>" +
+            text[end:]
+        )
+        # Bold the rest (skip the first, already bolded)
+        for m in matches[1:]:
+            # Find the current string again (since text has changed)
+            text = re.sub(re.escape(m.group(1)), f"<b>{m.group(1)}</b>", text, count=1)
+
+    text = re.sub(r'(-{2,}\s*(<br>|\n|\r|\s)*)+$', '', text.strip())
+    text = re.sub(r'(<br>\s*){2,}', '<br>', text)
+    text = re.sub(r'(\n\s*){2,}', '\n', text)
+
     if lines and lines[0].strip() != "El objetivo es adecuado y no requiere mejoras.":
         text = f"<b>Objetivo Mejorado:</b><br>{text}"
         text = f"{text}<br><br><span style='color:red;'>Favor de verificar la validez. Sugerencia generada por IA.</span>"
 
+    return text
+
+def clean_bullets_and_tabs(text: str) -> str:
+    text = text.replace('\t', ' ')
     return text
 
 def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
@@ -54,8 +80,9 @@ def generate_html_report(evaluation_dataframe: pd.DataFrame) -> None:
     for col in ['S (Específico)', 'M (Medible)', 'A (Alcanzable)', 'R (Relevante)', 'T (Temporal)']:
         html_df[col] = html_df[col].apply(create_icon_for_text)
     
-    html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(replace_newlines_for_html).apply(format_output)
-    html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(replace_newlines_for_html)
+    html_df['Objetivo Mejorado'] = html_df['Objetivo Mejorado'].apply(format_output).apply(replace_newlines_for_html)
+    html_df['Objetivo de la Materia'] = html_df['Objetivo de la Materia'].apply(clean_bullets_and_tabs).apply(replace_newlines_for_html)
+    html_df['Da servicio a:'] = html_df['Da servicio a:'].apply(replace_newlines_for_html)
 
     html_table = html_df.to_html(index=False, escape=False)
 

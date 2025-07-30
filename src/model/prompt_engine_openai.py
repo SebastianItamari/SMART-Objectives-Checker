@@ -43,13 +43,14 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
                 "2. Si el criterio temporal NO se cumple, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
                 "3. Si el objetivo NO especifica quién realiza la acción, agrega explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
                 "4. En una nueva línea, agrega un listado breve y conciso de sugerencias SOLO para mejorar el objetivo mejorado (no el original), siguiendo este formato:\n"
-                "   *Sugerencias para criterio [Criterio SMART (no uses abreviaciones)]:*\n"
+                "   *Sugerencias para criterio [Criterio SMART (no uses abreviaciones y NO INCLUYAS los criterios Temporal ni Específico)]:*\n"
                 "   - Sugerencia 1\n"
                 "   - Sugerencia 2\n"
                 "   - ...\n"
                 "   Las sugerencias deben estar acompañadas de ejemplos específicos que ayuden a cumplir plenamente los criterios SMART, incluyendo métricas o acciones observables si es necesario.\n"
-                "   **NUNCA incluyas sugerencias para el criterio Temporal.**\n"
-                "   **NUNCA incluyas sugerencias para el criterio Específico si la única falla es la ausencia del actor.**\n"
+                "   **NUNCA incluyas sugerencias para el criterio *Temporal*, NO generes NINGUN texto relacionado a este criterio en el listado.**\n"
+                "   **NUNCA incluyas sugerencias para el criterio *Específico*, NO generes NINGUN texto relacionado a este criterio en el listado.**\n"
+                "   **NUNCA incluyas sugerencias para el criterios que tienen Sí como respuesta.**\n"
                 "   Si el objetivo ya es totalmente adecuado, omite este paso.\n"
                 "5. Si el objetivo ya es totalmente adecuado, responde exactamente: 'El objetivo es adecuado y no requiere mejoras.'\n"
                 "6. Siempre entrega un 'Objetivo Mejorado' o indica que no requiere mejoras. No entregues sugerencias sueltas.\n\n"
@@ -64,7 +65,7 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
                 "T: Sí/No/Parcialmente. Explicación detallada y específica del motivo. [Expresiones como 'Al finalizar la asignatura' o similares son válidas.]\n"
                 "Objetivo Mejorado: (objetivo mejorado [Utilizar TODO el contenido del objetivo original, NO RESUMIR] o 'El objetivo es adecuado y no requiere mejoras.')\n"
 
-                "NO agregues introducción, conclusión ni explicaciones fuera del formato."
+                "NO agregues introducción, conclusión ni explicaciones fuera del formato. NUNCA incluyas en SUGERENCIAS los CRITERIOS TEMPORAL ni ESPECÍFICO. ÚNICAMENTE INLCUIR SUGERENCIA SI LA MÉTRICA TIENE NO O PARCIALMENTE COMO RESULTADO, NUNCA PARA SÍ.\n"
             )
         }
     ]
@@ -120,7 +121,7 @@ def parse_response(text: str) -> Dict[str, str]:
     return result
 
 # Process objectives, call API, and update dataframe
-def process_objectives_and_update_df(df, max_retries=5):
+def process_objectives_and_update_df(df, max_retries=5, save_path=None):
     data = df.to_dict(orient='records')
     total_records = len(data)
     results = [None] * total_records
@@ -191,16 +192,29 @@ def process_objectives_and_update_df(df, max_retries=5):
             if retry_tracker[idx] < max_retries
         ]
 
-        print(f"\nRemaining objectives to reprocess: {len(pending_indices)}")
+        print(f"\nRemaining objectives to process: {len(pending_indices)}")
 
-    for idx, row in df.iterrows():
-        codigo = row["Codigo Materia"]
-        parsed_result = next(
-            (r for r in results if r and r.get("Código") == codigo), None
-        )
-        if parsed_result:
-            for key in ["S", "M", "A", "R", "T", "Objetivo Mejorado"]:
-                df.at[idx, key] = parsed_result.get(key, "ERROR")
+        # Update DataFrame with current results after each batch
+        for idx, row in df.iterrows():
+            codigo = row["Codigo Materia"]
+            parsed_result = next(
+                (r for r in results if r and r.get("Código") == codigo), None
+            )
+            # Only update if all fields are not ERROR
+            if parsed_result and not any(
+                str(parsed_result.get(field, "")).startswith("ERROR")
+                for field in ["S", "M", "A", "R", "T", "Objetivo Mejorado"]
+            ):
+                for key in ["S", "M", "A", "R", "T", "Objetivo Mejorado"]:
+                    value = parsed_result.get(key, "")
+                    df.at[idx, key] = str(value)
+
+        # Save progress to CSV after each batch (only successful updates)
+        if save_path:
+            df.to_csv(save_path, index=False)
+            print(f"Progress saved to {save_path}")
 
     print("\nModel processing complete.\n")
+    if 'Carrera Padre' in df.columns:
+        df = df.sort_values(by='Carrera Padre', ascending=True).reset_index(drop=True)
     return df

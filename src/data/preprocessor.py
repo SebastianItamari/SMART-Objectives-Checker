@@ -76,6 +76,7 @@ def preprocess_df(df: pd.DataFrame) -> List[Dict]:
     df['Carreras Hijos'] = df['Carreras Hijos'].replace(['\\N', r'\N'], 'Ninguna')
 
     cleaned = df[required_cols].copy()
+    cleaned = cleaned.sort_values(by='Carrera Padre', ascending=True)
     print(cleaned)
     return cleaned.to_dict(orient='records')
 
