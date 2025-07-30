@@ -43,7 +43,7 @@ def build_messages(batch: List[Dict]) -> List[Dict]:
                 "2. Si el criterio temporal NO se cumple, agrega al inicio: 'Al finalizar la asignatura, ' seguido del objetivo sugerido.\n"
                 "3. Si el objetivo NO especifica quién realiza la acción, agrega explícitamente el actor 'el estudiante' al objetivo mejorado.\n"
                 "4. En una nueva línea, agrega un listado breve y conciso de sugerencias SOLO para mejorar el objetivo mejorado (no el original), siguiendo este formato:\n"
-                "   *Sugerencias para criterio [Criterio SMART]:*\n"
+                "   *Sugerencias para criterio [Criterio SMART (no uses abreviaciones)]:*\n"
                 "   - Sugerencia 1\n"
                 "   - Sugerencia 2\n"
                 "   - ...\n"

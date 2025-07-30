@@ -1,3 +1,4 @@
+import re
 import pandas as pd
 from datetime import datetime
 import os
@@ -26,10 +27,10 @@ def replace_newlines_for_html(text: str) -> str:
 
 def format_output(text: str) -> str:
     lines = text.splitlines()
+    text = re.sub(r'\*(.*?)\*', r'<br><b>\1</b>', text)
     
     if lines and lines[0].strip() != "El objetivo es adecuado y no requiere mejoras.":
         text = f"<b>Objetivo Mejorado:</b><br>{text}"
-        text = text.replace("*Sugerencias:*", "<br><b>Sugerencias para criterio 'Medible':</b>")
         text = f"{text}<br><br><span style='color:red;'>Favor de verificar la validez. Sugerencia generada por IA.</span>"
 
     return text
