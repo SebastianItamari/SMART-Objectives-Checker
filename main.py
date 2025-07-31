@@ -6,6 +6,7 @@ import webbrowser
 from src.data.preprocessor import load_and_preprocess
 from src.model.prompt_engine_openai import process_objectives_and_update_df
 from src.generator.report_generator import generate_html_report
+from src.data.statistics import smart_statistics
 
 if __name__ == "__main__":
     load_dotenv()
@@ -13,7 +14,7 @@ if __name__ == "__main__":
     RAW_CSV = os.getenv("RAW_CSV_PATH", "./data/datos_materias.csv")
     PROCESSED_CSV = os.getenv("PROCESSED_CSV_PATH", "./data/processed.csv")
     FINAL_RESULTS_CSV = os.getenv("FINAL_RESULTS_CSV_PATH", "./data/final_results.csv")
-    SUBJECTS_DATA_PATH = os.getenv("SUBJECTS_DATA_PATH", "./data/datos_materias.csv")
+    ESTATISTICS_CSV = os.getenv("ESTATISTICS_CSV_PATH", "./data/estadisticas_por_carrera.csv")
 
     # 1. Preprocess
     print("Preprocessing raw data...")
@@ -34,4 +35,7 @@ if __name__ == "__main__":
     # 4. Open report in browser
     abs_report_path = os.path.abspath(report_path)
     webbrowser.open(f"file://{abs_report_path}")
-    
+
+    # 5. Generate statistics by career
+    print("Generating statistics by career...")
+    smart_statistics(FINAL_RESULTS_CSV, ESTATISTICS_CSV)
